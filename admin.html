@@ -10,8 +10,63 @@
   
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  
+  <script>
+    // Security check executed immediately to prevent flash of unauthorized content
+    if (localStorage.getItem('fekra_admin_auth') !== 'firebase_session') {
+      window.location.href = 'login.html';
+    }
+  </script>
 </head>
 <body>
+
+  <!-- Noscript Warning -->
+  <noscript>
+    <style>
+      /* Hide all elements inside the body when JS is disabled */
+      body > *:not(noscript) {
+        display: none !important;
+      }
+      /* Show only the noscript warning container */
+      .noscript-warning {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #000000;
+        color: #ffffff;
+        font-family: 'Cairo', sans-serif;
+        text-align: center;
+        padding: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99999;
+      }
+      .noscript-logo {
+        width: 120px;
+        margin-bottom: 24px;
+      }
+      .noscript-title {
+        color: #eeba2c;
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+      }
+      .noscript-desc {
+        color: #b3b3b3;
+        font-size: 1.1rem;
+        max-width: 500px;
+        line-height: 1.6;
+      }
+    </style>
+    <div class="noscript-warning">
+      <img src="files/fekra shop (500 x 500 px).png" alt="Fekra Shop" class="noscript-logo">
+      <h2 class="noscript-title">يرجى تفعيل جافا سكريبت</h2>
+      <p class="noscript-desc">لوحة التحكم تعتمد بشكل كامل على JavaScript للتحقق من الأمان وإدارة البيانات. يرجى تفعيل جافا سكريبت في إعدادات متصفحك للوصول إلى هذه الصفحة.</p>
+    </div>
+  </noscript>
 
   <!-- App Header -->
   <header>

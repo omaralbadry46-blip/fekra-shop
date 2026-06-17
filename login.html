@@ -13,6 +13,54 @@
 </head>
 <body class="login-body">
 
+  <!-- Noscript Warning -->
+  <noscript>
+    <style>
+      /* Hide all elements inside the body when JS is disabled */
+      body > *:not(noscript) {
+        display: none !important;
+      }
+      /* Show only the noscript warning container */
+      .noscript-warning {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #000000;
+        color: #ffffff;
+        font-family: 'Cairo', sans-serif;
+        text-align: center;
+        padding: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99999;
+      }
+      .noscript-logo {
+        width: 120px;
+        margin-bottom: 24px;
+      }
+      .noscript-title {
+        color: #eeba2c;
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+      }
+      .noscript-desc {
+        color: #b3b3b3;
+        font-size: 1.1rem;
+        max-width: 500px;
+        line-height: 1.6;
+      }
+    </style>
+    <div class="noscript-warning">
+      <img src="files/fekra shop (500 x 500 px).png" alt="Fekra Shop" class="noscript-logo">
+      <h2 class="noscript-title">يرجى تفعيل جافا سكريبت</h2>
+      <p class="noscript-desc">هذه الصفحة تعتمد بشكل كامل على JavaScript لتسجيل الدخول والتحقق من الأمان. يرجى تفعيل جافا سكريبت في إعدادات متصفحك للوصول إليها.</p>
+    </div>
+  </noscript>
+
   <div class="login-card">
     <a href="index.html">
       <img src="files/fekra shop (500 x 500 px).png" alt="لوجو فكرة شوب" class="login-logo">
@@ -66,40 +114,8 @@
         localStorage.setItem('fekra_admin_auth', 'firebase_session');
         window.location.href = 'admin.html';
       } catch (error) {
-        console.error("Firebase authentication error:", error);
-        
-        let errorMsg = 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.';
-        
-        switch (error.code) {
-          case 'auth/invalid-email':
-            errorMsg = 'صيغة البريد الإلكتروني غير صحيحة.';
-            break;
-          case 'auth/user-disabled':
-            errorMsg = 'هذا الحساب تم تعطيله من قبل مدير النظام.';
-            break;
-          case 'auth/user-not-found':
-            errorMsg = 'البريد الإلكتروني غير مسجل في Firebase. يرجى إضافة المستخدم أولاً في لوحة تحكم Firebase.';
-            break;
-          case 'auth/wrong-password':
-            errorMsg = 'كلمة المرور غير صحيحة.';
-            break;
-          case 'auth/invalid-credential':
-            errorMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة. تأكد من مطابقتها للمستخدم المضاف في لوحة Firebase.';
-            break;
-          case 'auth/operation-not-allowed':
-            errorMsg = 'تسجيل الدخول بالبريد الإلكتروني غير مفعل في Firebase Authentication. يرجى تفعيله من صفحة Sign-in method في Firebase Console.';
-            break;
-          case 'auth/network-request-failed':
-            errorMsg = 'فشل الاتصال بالإنترنت. يرجى التحقق من اتصالك بالشبكة.';
-            break;
-          case 'auth/too-many-requests':
-            errorMsg = 'تم حظر هذا الحساب مؤقتاً بسبب محاولات تسجيل دخول خاطئة متكررة. جرب مجدداً لاحقاً.';
-            break;
-          default:
-            errorMsg = `خطأ في Firebase: ${error.message} (رمز الخطأ: ${error.code || 'unknown'})`;
-        }
-        
-        errorEl.textContent = errorMsg;
+        console.error("Firebase authentication error:", error.code || error.message);
+        errorEl.textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
         errorEl.style.display = 'block';
         submitBtn.innerHTML = '<span>تسجيل الدخول</span>';
         submitBtn.disabled = false;
