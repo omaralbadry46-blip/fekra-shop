@@ -12,8 +12,8 @@ const firebaseConfig = {
   projectId: "fekra-shop",
   storageBucket: "fekra-shop.firebasestorage.app",
   messagingSenderId: "714262868705",
-  appId: "1:714262868705:web:d50e38613abae161d23da0",
-  measurementId: "G-W63MJH6DY7"
+  appId: "1:714262868705:web:47cd63ef22a14876d23da0",
+  measurementId: "G-S343B14WYV"
 };
 
 // Initialize Firebase
