@@ -7,7 +7,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth
 // TODO: Replace the following config with your own Firebase project configuration
 // You can get this from the Firebase Console: Project Settings -> General -> Your apps
 const firebaseConfig = {
-  apiKey: "AIzaSyBCectKNws3gehaK9e08pt324TKRhhg28c",
+  apiKey: "AIzaSyBCectKNws3gehaK9e0Bpt324TKRhHg28c",
   authDomain: "fekra-shop.firebaseapp.com",
   projectId: "fekra-shop",
   storageBucket: "fekra-shop.firebasestorage.app",
