@@ -317,7 +317,7 @@
     // Main logic Imports
     import { db } from './js/firebase-config.js';
     import { uploadProductImage } from './js/supabase-config.js';
-    import { collection, getDocs, doc, setDoc, addDoc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, getDocs, doc, setDoc, addDoc, deleteDoc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { showToast } from './js/cart-helper.js';
 
     // State
@@ -325,11 +325,12 @@
     let ordersList = [];
     let selectedImageFile = null;
     let editMode = false;
+    let ordersUnsubscribe = null;
 
     // Load initial data
     async function loadAdminData() {
       await getProducts();
-      await getOrders();
+      getOrders();
       calculateStats();
     }
 
@@ -398,25 +399,31 @@
       });
     }
 
-    // 2. Fetch Orders
-    async function getOrders() {
+    // 2. Fetch Orders (Real-time listener)
+    function getOrders() {
       const container = document.getElementById('orders-list-container');
       if (!container) return;
 
+      if (ordersUnsubscribe) return; // Prevent duplicate listeners
+
       try {
         const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        ordersList = [];
-        snapshot.forEach(doc => {
-          ordersList.push({ id: doc.id, ...doc.data() });
+        ordersUnsubscribe = onSnapshot(q, (snapshot) => {
+          ordersList = [];
+          snapshot.forEach(doc => {
+            ordersList.push({ id: doc.id, ...doc.data() });
+          });
+          renderOrdersList(container);
+          calculateStats();
+        }, (error) => {
+          console.error("Could not listen to orders from Firebase:", error);
+          showToast('فشل جلب الطلبات في الوقت الفعلي', 'error');
         });
       } catch (error) {
         console.error("Could not load orders from Firebase:", error);
         ordersList = [];
         showToast('فشل جلب الطلبات من فايربيز', 'error');
       }
-
-      renderOrdersList(container);
     }
 
     function renderOrdersList(container) {
@@ -522,7 +529,7 @@
         const orderRef = doc(db, "orders", id);
         await updateDoc(orderRef, { status: status });
         showToast('تم تحديث حالة الطلب بنجاح');
-        getOrders();
+        // No need to manually load orders anymore as onSnapshot handles it automatically
       } catch (error) {
         console.error("Error updating order status in Firebase:", error);
         showToast('فشل تحديث حالة الطلب', 'error');
