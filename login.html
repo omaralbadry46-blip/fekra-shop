@@ -66,8 +66,40 @@
         localStorage.setItem('fekra_admin_auth', 'firebase_session');
         window.location.href = 'admin.html';
       } catch (error) {
-        console.error("Firebase authentication error:", error.code || error.message);
-        errorEl.textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+        console.error("Firebase authentication error:", error);
+        
+        let errorMsg = 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.';
+        
+        switch (error.code) {
+          case 'auth/invalid-email':
+            errorMsg = 'صيغة البريد الإلكتروني غير صحيحة.';
+            break;
+          case 'auth/user-disabled':
+            errorMsg = 'هذا الحساب تم تعطيله من قبل مدير النظام.';
+            break;
+          case 'auth/user-not-found':
+            errorMsg = 'البريد الإلكتروني غير مسجل في Firebase. يرجى إضافة المستخدم أولاً في لوحة تحكم Firebase.';
+            break;
+          case 'auth/wrong-password':
+            errorMsg = 'كلمة المرور غير صحيحة.';
+            break;
+          case 'auth/invalid-credential':
+            errorMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة. تأكد من مطابقتها للمستخدم المضاف في لوحة Firebase.';
+            break;
+          case 'auth/operation-not-allowed':
+            errorMsg = 'تسجيل الدخول بالبريد الإلكتروني غير مفعل في Firebase Authentication. يرجى تفعيله من صفحة Sign-in method في Firebase Console.';
+            break;
+          case 'auth/network-request-failed':
+            errorMsg = 'فشل الاتصال بالإنترنت. يرجى التحقق من اتصالك بالشبكة.';
+            break;
+          case 'auth/too-many-requests':
+            errorMsg = 'تم حظر هذا الحساب مؤقتاً بسبب محاولات تسجيل دخول خاطئة متكررة. جرب مجدداً لاحقاً.';
+            break;
+          default:
+            errorMsg = `خطأ في Firebase: ${error.message} (رمز الخطأ: ${error.code || 'unknown'})`;
+        }
+        
+        errorEl.textContent = errorMsg;
         errorEl.style.display = 'block';
         submitBtn.innerHTML = '<span>تسجيل الدخول</span>';
         submitBtn.disabled = false;
