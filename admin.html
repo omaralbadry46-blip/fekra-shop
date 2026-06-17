@@ -176,15 +176,13 @@
   <script type="module">
     // Security check
     const authSession = localStorage.getItem('fekra_admin_auth');
-    if (!authSession) {
+    if (!authSession || authSession !== 'firebase_session') {
       window.location.href = 'login.html';
     }
 
     const indicator = document.getElementById('auth-status-indicator');
     if (indicator) {
-      indicator.textContent = authSession === 'developer_session' 
-        ? 'وضع المطور التجريبي (بدون قواعد بيانات فعلية)' 
-        : 'متصل بقاعدة بيانات Firebase و Supabase';
+      indicator.textContent = 'متصل بقاعدة بيانات Firebase و Supabase';
     }
 
     // Logout
@@ -248,8 +246,9 @@
           productsList.push({ id: doc.id, ...doc.data() });
         });
       } catch (error) {
-        console.warn("Could not load products from Firebase, loading local sandbox demo:", error);
-        productsList = JSON.parse(localStorage.getItem('fekra_sandbox_products')) || getMockInitialProducts();
+        console.error("Could not load products from Firebase:", error);
+        productsList = [];
+        showToast('فشل جلب المنتجات من فايربيز', 'error');
       }
 
       renderProductsTable(tbody);
@@ -312,8 +311,9 @@
           ordersList.push({ id: doc.id, ...doc.data() });
         });
       } catch (error) {
-        console.warn("Could not load orders from Firebase, loading local sandbox demo.");
-        ordersList = JSON.parse(localStorage.getItem('fekra_sandbox_orders')) || [];
+        console.error("Could not load orders from Firebase:", error);
+        ordersList = [];
+        showToast('فشل جلب الطلبات من فايربيز', 'error');
       }
 
       renderOrdersList(container);
@@ -424,15 +424,8 @@
         showToast('تم تحديث حالة الطلب بنجاح');
         getOrders();
       } catch (error) {
-        // Fallback for local sandbox demo
-        const idx = ordersList.findIndex(o => o.id === id);
-        if (idx > -1) {
-          ordersList[idx].status = status;
-          localStorage.setItem('fekra_sandbox_orders', JSON.stringify(ordersList));
-          showToast('تم تحديث الحالة محلياً');
-          getOrders();
-          calculateStats();
-        }
+        console.error("Error updating order status in Firebase:", error);
+        showToast('فشل تحديث حالة الطلب', 'error');
       }
     }
 
@@ -445,11 +438,8 @@
         showToast('تم حذف المنتج بنجاح');
         loadAdminData();
       } catch (error) {
-        // Fallback local sandbox delete
-        productsList = productsList.filter(p => p.id !== id);
-        localStorage.setItem('fekra_sandbox_products', JSON.stringify(productsList));
-        showToast('تم حذف المنتج محلياً');
-        loadAdminData();
+        console.error("Error deleting product in Firebase:", error);
+        showToast('فشل حذف المنتج من فايربيز', 'error');
       }
     }
 
@@ -536,13 +526,20 @@
           imageUrl = await uploadProductImage(selectedImageFile);
           uploadStatus.textContent = 'تم رفع الصورة لـ Supabase بنجاح!';
         } catch (error) {
-          console.warn("Supabase upload failed, using generic placeholder for demo:", error);
-          // If Supabase upload fails (e.g. key placeholder not replaced), use a mock image
-          imageUrl = 'files/fekra shop (500 x 500 px).png';
+          console.error("Supabase upload failed:", error);
+          showToast('فشل رفع الصورة لـ Supabase. يرجى مراجعة إعدادات الباكت والـ Policies.', 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'حفظ وإضافة للمتجر';
+          uploadStatus.textContent = 'خطأ في رفع الصورة.';
+          return;
         }
       } else if (!editMode) {
-        // If no image is chosen, require one (or use placeholder)
-        imageUrl = 'files/fekra shop (500 x 500 px).png';
+        // Require image for new products
+        showToast('يرجى اختيار صورة للمنتج ليتم رفعها.', 'error');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'حفظ وإضافة للمتجر';
+        uploadStatus.textContent = 'يرجى اختيار صورة.';
+        return;
       }
 
       const productPayload = {
@@ -568,22 +565,8 @@
         closeModal();
         loadAdminData();
       } catch (error) {
-        console.warn("Could not save to Firebase Firestore, saving to local storage sandbox:", error);
-        
-        // Fallback for sandbox demo
-        if (editMode) {
-          const idx = productsList.findIndex(p => p.id === id);
-          if (idx > -1) {
-            productsList[idx] = { ...productsList[idx], ...productPayload };
-          }
-        } else {
-          const newId = 'local_' + Math.random().toString(36).substring(2, 9);
-          productsList.push({ id: newId, ...productPayload });
-        }
-        localStorage.setItem('fekra_sandbox_products', JSON.stringify(productsList));
-        showToast('تم الحفظ محلياً بنجاح');
-        closeModal();
-        loadAdminData();
+        console.error("Could not save to Firebase Firestore:", error);
+        showToast('فشل الحفظ في قاعدة بيانات Firestore', 'error');
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = 'حفظ وإضافة للمتجر';

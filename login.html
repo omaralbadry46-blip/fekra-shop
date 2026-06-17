@@ -37,12 +37,6 @@
         <span>تسجيل الدخول</span>
       </button>
     </form>
-
-    <div style="margin-top: 25px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
-      وضع التجربة السريع (بدون فايربيز):<br>
-      الحساب: <span style="font-family:var(--font-english); color:var(--text-gray);">admin@fekra.com</span><br>
-      الرمز: <span style="font-family:var(--font-english); color:var(--text-gray);">admin123</span>
-    </div>
   </div>
 
   <script type="module">
@@ -72,20 +66,11 @@
         localStorage.setItem('fekra_admin_auth', 'firebase_session');
         window.location.href = 'admin.html';
       } catch (error) {
-        console.warn("Firebase authentication error:", error.code || error.message);
-        
-        // Failover Developer Mode for instant presentation
-        if (email === 'admin@fekra.com' && password === 'admin123') {
-          console.log("Developer Mode authorized via credentials.");
-          localStorage.setItem('fekra_admin_auth', 'developer_session');
-          window.location.href = 'admin.html';
-        } else {
-          // Display actual error to the administrator
-          errorEl.textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
-          errorEl.style.display = 'block';
-          submitBtn.innerHTML = '<span>تسجيل الدخول</span>';
-          submitBtn.disabled = false;
-        }
+        console.error("Firebase authentication error:", error.code || error.message);
+        errorEl.textContent = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+        errorEl.style.display = 'block';
+        submitBtn.innerHTML = '<span>تسجيل الدخول</span>';
+        submitBtn.disabled = false;
       }
     });
   </script>
