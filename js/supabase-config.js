@@ -13,7 +13,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  * @param {string} bucket - The name of the bucket (e.g., 'product-images').
  * @returns {Promise<string>} The public URL of the uploaded image.
  */
-export async function uploadProductImage(file, bucket = 'product-images') {
+export async function uploadProductImage(file, bucket = 'PRODUCT-IMAGES') {
   try {
     // Clean file name to prevent issues (replace spaces and special characters)
     const fileExt = file.name.split('.').pop();
