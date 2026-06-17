@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم | Fekra Shop</title>
+  <link rel="icon" type="image/png" href="files/fekra shop (64 x 64 px).png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="files/fekra shop 150.200.png" alt="لوجو فكرة شوب" class="logo-img">
+      </a>
+      
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-item">الرئيسية</a>
+        <a href="index.html#catalog" class="nav-item">المنتجات</a>
+        <a href="admin.html" class="nav-item active">لوحة الإدارة</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" id="admin-logout-btn" style="padding: 6px 16px; font-size:0.85rem;">
+          <ion-icon name="log-out-outline" style="font-size: 1.1rem; vertical-align: middle;"></ion-icon>
+          <span>خروج</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="admin-container">
+      
+      <!-- Top Title -->
+      <div class="admin-header">
+        <div>
+          <h1 class="admin-title">لوحة الإدارة والتحكم</h1>
+          <p style="color:var(--text-gray); font-size:0.95rem; margin-top:5px;" id="auth-status-indicator">الوضع الافتراضي للموقع</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="admin-nav-tabs">
+        <button class="admin-tab-btn active" id="tab-products-btn">إدارة المنتجات</button>
+        <button class="admin-tab-btn" id="tab-orders-btn">طلبات العملاء</button>
+      </div>
+
+      <!-- Overview Stats Cards -->
+      <div class="admin-stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">إجمالي الطلبات</span>
+          <span class="stat-value numbers" id="stat-total-orders">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">المبيعات الكلية</span>
+          <span class="stat-value price" id="stat-total-revenue">0.00 EGP</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">المنتجات المتاحة</span>
+          <span class="stat-value numbers" id="stat-total-products">0</span>
+        </div>
+      </div>
+
+      <!-- PRODUCTS TAB PANEL -->
+      <div class="tab-panel" id="panel-products">
+        <div class="section-actions">
+          <h2 style="font-size: 1.25rem; font-weight:700; color:var(--color-gold);">جميع المنتجات بالمعرض</h2>
+          <button class="btn btn-primary" id="open-add-modal-btn">
+            <ion-icon name="add-outline" style="font-size: 1.25rem;"></ion-icon>
+            <span>إضافة منتج جديد</span>
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>صورة المنتج</th>
+                <th>اسم المنتج</th>
+                <th>الفئة</th>
+                <th>السعر</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="products-table-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS TAB PANEL -->
+      <div class="tab-panel d-none" id="panel-orders">
+        <h2 style="font-size: 1.25rem; font-weight:700; color:var(--color-gold); margin-bottom: 24px;">قائمة طلبات العملاء الشحن</h2>
+        
+        <div class="orders-list" id="orders-list-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ADD PRODUCT MODAL -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-text">إضافة منتج جديد للمتجر</h3>
+        <span class="modal-close" id="close-modal-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </span>
+      </div>
+      
+      <form id="product-form">
+        <input type="hidden" id="edit-product-id">
+        
+        <div class="form-group">
+          <label for="prod-title">اسم المنتج *</label>
+          <input type="text" id="prod-title" class="form-control" required placeholder="مثال: ساعة رقمية ذكية">
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="prod-price">السعر (EGP) *</label>
+            <input type="number" step="0.01" id="prod-price" class="form-control" required placeholder="150.00" style="direction: ltr; text-align: right;">
+          </div>
+          <div class="form-group">
+            <label for="prod-category">الفئة *</label>
+            <select id="prod-category" class="form-control" required>
+              <option value="" disabled selected>اختر الفئة</option>
+              <option value="إلكترونيات">إلكترونيات</option>
+              <option value="ملابس">ملابس</option>
+              <option value="إكسسوارات">إكسسوارات</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prod-desc">وصف المنتج بالتفصيل</label>
+          <textarea id="prod-desc" class="form-control" placeholder="اكتب المزايا والألوان والأبعاد المتوفرة للمنتج..."></textarea>
+        </div>
+
+        <!-- Supabase Image Upload Area -->
+        <div class="form-group">
+          <label>صورة المنتج *</label>
+          <div class="image-upload-wrapper" id="image-upload-zone">
+            <div class="image-upload-placeholder" id="upload-placeholder-content">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <span>اضغط هنا لاختيار صورة المنتج لرفعها على Supabase</span>
+              <span style="font-size:0.75rem; color:var(--text-muted);">صيغة PNG, JPG (الحد الأقصى 5 ميجابايت)</span>
+            </div>
+            <img id="upload-preview" class="image-preview" src="#" alt="معاينة الصورة">
+            <input type="file" id="prod-image-file" accept="image/*" style="display: none;">
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top:5px;" id="upload-status-text"></p>
+        </div>
+
+        <div style="margin-top: 24px; display:flex; gap:12px;">
+          <button type="submit" class="btn btn-primary" id="btn-save-product" style="flex:1;">حفظ وإضافة للمتجر</button>
+          <button type="button" class="btn btn-secondary" id="btn-cancel-modal">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS Implementation -->
+  <script type="module">
+    // Security check
+    const authSession = localStorage.getItem('fekra_admin_auth');
+    if (!authSession) {
+      window.location.href = 'login.html';
+    }
+
+    const indicator = document.getElementById('auth-status-indicator');
+    if (indicator) {
+      indicator.textContent = authSession === 'developer_session' 
+        ? 'وضع المطور التجريبي (بدون قواعد بيانات فعلية)' 
+        : 'متصل بقاعدة بيانات Firebase و Supabase';
+    }
+
+    // Logout
+    const logoutBtn = document.getElementById('admin-logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('fekra_admin_auth');
+        window.location.href = 'login.html';
+      });
+    }
+
+    // Tab toggling
+    const tabProductsBtn = document.getElementById('tab-products-btn');
+    const tabOrdersBtn = document.getElementById('tab-orders-btn');
+    const panelProducts = document.getElementById('panel-products');
+    const panelOrders = document.getElementById('panel-orders');
+
+    tabProductsBtn.addEventListener('click', () => {
+      tabProductsBtn.classList.add('active');
+      tabOrdersBtn.classList.remove('active');
+      panelProducts.classList.remove('d-none');
+      panelOrders.classList.add('d-none');
+    });
+
+    tabOrdersBtn.addEventListener('click', () => {
+      tabOrdersBtn.classList.add('active');
+      tabProductsBtn.classList.remove('active');
+      panelOrders.classList.remove('d-none');
+      panelProducts.classList.add('d-none');
+    });
+
+    // Main logic Imports
+    import { db } from './js/firebase-config.js';
+    import { uploadProductImage } from './js/supabase-config.js';
+    import { collection, getDocs, doc, setDoc, addDoc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { showToast } from './js/cart-helper.js';
+
+    // State
+    let productsList = [];
+    let ordersList = [];
+    let selectedImageFile = null;
+    let editMode = false;
+
+    // Load initial data
+    async function loadAdminData() {
+      await getProducts();
+      await getOrders();
+      calculateStats();
+    }
+
+    // 1. Fetch Products
+    async function getProducts() {
+      const tbody = document.getElementById('products-table-body');
+      if (!tbody) return;
+
+      try {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        productsList = [];
+        snapshot.forEach(doc => {
+          productsList.push({ id: doc.id, ...doc.data() });
+        });
+      } catch (error) {
+        console.warn("Could not load products from Firebase, loading local sandbox demo:", error);
+        productsList = JSON.parse(localStorage.getItem('fekra_sandbox_products')) || getMockInitialProducts();
+      }
+
+      renderProductsTable(tbody);
+    }
+
+    function getMockInitialProducts() {
+      const initial = [
+        { id: 'demo-1', title: 'ساعة يد كلاسيكية سوداء فاخرة', price: 1850.00, category: 'إكسسوارات', image: 'files/fekra shop (500 x 500 px).png', description: 'ساعة أنيقة بتصميم مينيمالست جذاب وشريط جلدي مريح مقاوم للماء.' },
+        { id: 'demo-2', title: 'سماعات رأس لاسلكية بخاصية إلغاء الضوضاء', price: 2400.00, category: 'إلكترونيات', image: 'files/fekra shop (500 x 500 px).png', description: 'صوت نقي عالي الدقة مع وسادات أذن مريحة وبطارية تدوم لـ 40 ساعة متواصلة.' },
+        { id: 'demo-3', title: 'حقيبة ظهر عصرية لرجال الأعمال والرحلات', price: 1200.00, category: 'أخرى', image: 'files/fekra shop (500 x 500 px).png', description: 'حقيبة ظهر أنيقة ومضادة للسرقة ومقاومة للمياه مع منفذ شحن USB ذكي.' },
+        { id: 'demo-4', title: 'سترة قماشية سوداء كاجوال بياقة مرتفعة', price: 850.00, category: 'ملابس', image: 'files/fekra shop (500 x 500 px).png', description: 'سترة ثقيلة مصنوعة من القطن الطبيعي 100% لتوفير أقصى درجات الراحة والدفء.' }
+      ];
+      localStorage.setItem('fekra_sandbox_products', JSON.stringify(initial));
+      return initial;
+    }
+
+    function renderProductsTable(tbody) {
+      tbody.innerHTML = '';
+      if (productsList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">لا توجد منتجات مضافة بعد. اضغط على إضافة منتج للبدء.</td></tr>`;
+        return;
+      }
+
+      productsList.forEach(product => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img src="${product.image || 'files/fekra shop (64 x 64 px).png'}" alt="Thumb" class="admin-product-thumb" onerror="this.src='files/fekra shop (64 x 64 px).png'"></td>
+          <td style="font-weight: 600;">${product.title}</td>
+          <td><span class="product-badge" style="background:#212121; padding:4px 8px;">${product.category}</span></td>
+          <td class="price" style="color:var(--color-gold); font-weight:700;">${Number(product.price).toFixed(2)} EGP</td>
+          <td>
+            <div class="action-buttons-cell">
+              <button class="action-icon-btn btn-edit" data-id="${product.id}" title="تعديل"><ion-icon name="create-outline"></ion-icon></button>
+              <button class="action-icon-btn btn-delete" data-id="${product.id}" title="حذف"><ion-icon name="trash-outline"></ion-icon></button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Actions Event Listeners
+      tbody.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          openEditProductModal(id);
+        });
+      });
+
+      tbody.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          deleteProduct(id);
+        });
+      });
+    }
+
+    // 2. Fetch Orders
+    async function getOrders() {
+      const container = document.getElementById('orders-list-container');
+      if (!container) return;
+
+      try {
+        const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        ordersList = [];
+        snapshot.forEach(doc => {
+          ordersList.push({ id: doc.id, ...doc.data() });
+        });
+      } catch (error) {
+        console.warn("Could not load orders from Firebase, loading local sandbox demo.");
+        ordersList = JSON.parse(localStorage.getItem('fekra_sandbox_orders')) || [];
+      }
+
+      renderOrdersList(container);
+    }
+
+    function renderOrdersList(container) {
+      container.innerHTML = '';
+      if (ordersList.length === 0) {
+        container.innerHTML = `<p style="text-align:center; padding: 40px 0; color:var(--text-muted);">لا توجد طلبات واردة حتى الآن.</p>`;
+        return;
+      }
+
+      ordersList.forEach(order => {
+        const formattedDate = order.createdAt?.seconds 
+          ? new Date(order.createdAt.seconds * 1000).toLocaleString('ar-EG')
+          : new Date(order.createdAt || Date.now()).toLocaleString('ar-EG');
+          
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="order-card-header">
+            <div>
+              <span>معرف الطلب: </span><span class="order-id">${order.id}</span>
+              <span style="font-size:0.8rem; color:var(--text-muted); margin-right:15px;">${formattedDate}</span>
+            </div>
+            <span class="order-status-badge status-${order.status || 'pending'}">${translateStatus(order.status)}</span>
+          </div>
+
+          <div class="order-card-details">
+            <div class="order-customer-info">
+              <strong style="color:var(--text-white);">بيانات العميل:</strong>
+              <span>الاسم: ${order.customerName}</span>
+              <span>الهاتف: <a href="tel:${order.phone}" style="color:var(--color-gold); direction:ltr; display:inline-block;">${order.phone}</a></span>
+              <span>العنوان: ${order.city} - ${order.address}</span>
+              ${order.notes ? `<span style="color:var(--text-muted);">ملاحظات: ${order.notes}</span>` : ''}
+            </div>
+
+            <div class="order-items-summary">
+              <strong style="color:var(--text-white);">المنتجات المطلوبة:</strong>
+              ${order.items.map(item => `
+                <div class="order-item-line">
+                  <span>- ${item.title}</span>
+                  <span class="numbers" style="color:var(--color-gold); font-size:0.85rem;">x${item.quantity}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="order-card-footer">
+            <div class="order-total-price">
+              <span>الإجمالي الكلي:</span>
+              <span class="price text-gold">${Number(order.total).toFixed(2)} EGP</span>
+            </div>
+            
+            <div class="order-actions">
+              <span>تحديث الحالة:</span>
+              <select class="order-status-select" data-id="${order.id}">
+                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>قيد الانتظار</option>
+                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>قيد التجهيز</option>
+                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>تم التوصيل</option>
+                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>ملغي</option>
+              </select>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Update Order Status Event
+      container.querySelectorAll('.order-status-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const id = select.getAttribute('data-id');
+          const newStatus = e.target.value;
+          updateOrderStatus(id, newStatus);
+        });
+      });
+    }
+
+    function translateStatus(status) {
+      switch (status) {
+        case 'pending': return 'قيد الانتظار';
+        case 'processing': return 'قيد التجهيز';
+        case 'completed': return 'تم التوصيل';
+        case 'cancelled': return 'ملغي';
+        default: return 'قيد الانتظار';
+      }
+    }
+
+    // 3. Stats Calculator
+    function calculateStats() {
+      const ordersCount = ordersList.length;
+      const productsCount = productsList.length;
+      
+      const salesSum = ordersList
+        .filter(o => o.status === 'completed')
+        .reduce((sum, o) => sum + Number(o.total), 0);
+
+      document.getElementById('stat-total-orders').textContent = ordersCount;
+      document.getElementById('stat-total-revenue').textContent = salesSum.toFixed(2) + ' EGP';
+      document.getElementById('stat-total-products').textContent = productsCount;
+    }
+
+    // 4. Update Order Status
+    async function updateOrderStatus(id, status) {
+      try {
+        const orderRef = doc(db, "orders", id);
+        await updateDoc(orderRef, { status: status });
+        showToast('تم تحديث حالة الطلب بنجاح');
+        getOrders();
+      } catch (error) {
+        // Fallback for local sandbox demo
+        const idx = ordersList.findIndex(o => o.id === id);
+        if (idx > -1) {
+          ordersList[idx].status = status;
+          localStorage.setItem('fekra_sandbox_orders', JSON.stringify(ordersList));
+          showToast('تم تحديث الحالة محلياً');
+          getOrders();
+          calculateStats();
+        }
+      }
+    }
+
+    // 5. Delete Product
+    async function deleteProduct(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا المنتج نهائياً من المتجر؟')) return;
+
+      try {
+        await deleteDoc(doc(db, "products", id));
+        showToast('تم حذف المنتج بنجاح');
+        loadAdminData();
+      } catch (error) {
+        // Fallback local sandbox delete
+        productsList = productsList.filter(p => p.id !== id);
+        localStorage.setItem('fekra_sandbox_products', JSON.stringify(productsList));
+        showToast('تم حذف المنتج محلياً');
+        loadAdminData();
+      }
+    }
+
+    // 6. Modal Controls
+    const modal = document.getElementById('product-modal');
+    const openModalBtn = document.getElementById('open-add-modal-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cancelModalBtn = document.getElementById('btn-cancel-modal');
+    const productForm = document.getElementById('product-form');
+    const imageUploadZone = document.getElementById('image-upload-zone');
+    const fileInput = document.getElementById('prod-image-file');
+    const previewImg = document.getElementById('upload-preview');
+    const placeholderContent = document.getElementById('upload-placeholder-content');
+    const uploadStatus = document.getElementById('upload-status-text');
+
+    const openModal = () => {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+      modal.classList.remove('open');
+      document.body.style.overflow = 'auto';
+      productForm.reset();
+      selectedImageFile = null;
+      previewImg.style.display = 'none';
+      previewImg.src = '#';
+      placeholderContent.style.display = 'flex';
+      uploadStatus.textContent = '';
+      editMode = false;
+      document.getElementById('edit-product-id').value = '';
+      document.getElementById('modal-title-text').textContent = 'إضافة منتج جديد للمتجر';
+    };
+
+    openModalBtn.addEventListener('click', openModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelModalBtn.addEventListener('click', closeModal);
+
+    // Image Upload Zone Clicks
+    imageUploadZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        selectedImageFile = file;
+        
+        // Show local preview
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          previewImg.src = event.target.result;
+          previewImg.style.display = 'block';
+          placeholderContent.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // 7. Save / Edit Product
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById('edit-product-id').value;
+      const title = document.getElementById('prod-title').value;
+      const price = Number(document.getElementById('prod-price').value);
+      const category = document.getElementById('prod-category').value;
+      const description = document.getElementById('prod-desc').value;
+      const saveBtn = document.getElementById('btn-save-product');
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'جاري الحفظ والرفع...';
+      uploadStatus.textContent = 'جاري تجهيز المنتج والرفع لـ Supabase...';
+
+      let imageUrl = '';
+      
+      // If we are editing, keep old image as default
+      if (editMode) {
+        const prod = productsList.find(p => p.id === id);
+        imageUrl = prod ? prod.image : '';
+      }
+
+      // If a new file is chosen, upload it to Supabase Storage!
+      if (selectedImageFile) {
+        try {
+          imageUrl = await uploadProductImage(selectedImageFile);
+          uploadStatus.textContent = 'تم رفع الصورة لـ Supabase بنجاح!';
+        } catch (error) {
+          console.warn("Supabase upload failed, using generic placeholder for demo:", error);
+          // If Supabase upload fails (e.g. key placeholder not replaced), use a mock image
+          imageUrl = 'files/fekra shop (500 x 500 px).png';
+        }
+      } else if (!editMode) {
+        // If no image is chosen, require one (or use placeholder)
+        imageUrl = 'files/fekra shop (500 x 500 px).png';
+      }
+
+      const productPayload = {
+        title,
+        price,
+        category,
+        description,
+        image: imageUrl,
+        createdAt: new Date()
+      };
+
+      try {
+        if (editMode) {
+          // Update doc in Firebase
+          const docRef = doc(db, "products", id);
+          await setDoc(docRef, productPayload, { merge: true });
+          showToast('تم تحديث المنتج بالمتجر');
+        } else {
+          // Add doc to Firebase
+          await addDoc(collection(db, "products"), productPayload);
+          showToast('تمت إضافة المنتج للمتجر بنجاح');
+        }
+        closeModal();
+        loadAdminData();
+      } catch (error) {
+        console.warn("Could not save to Firebase Firestore, saving to local storage sandbox:", error);
+        
+        // Fallback for sandbox demo
+        if (editMode) {
+          const idx = productsList.findIndex(p => p.id === id);
+          if (idx > -1) {
+            productsList[idx] = { ...productsList[idx], ...productPayload };
+          }
+        } else {
+          const newId = 'local_' + Math.random().toString(36).substring(2, 9);
+          productsList.push({ id: newId, ...productPayload });
+        }
+        localStorage.setItem('fekra_sandbox_products', JSON.stringify(productsList));
+        showToast('تم الحفظ محلياً بنجاح');
+        closeModal();
+        loadAdminData();
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'حفظ وإضافة للمتجر';
+      }
+    });
+
+    // 8. Open Product for Editing
+    function openEditProductModal(id) {
+      const product = productsList.find(p => p.id === id);
+      if (!product) return;
+
+      editMode = true;
+      document.getElementById('modal-title-text').textContent = 'تعديل بيانات المنتج';
+      document.getElementById('edit-product-id').value = product.id;
+      document.getElementById('prod-title').value = product.title;
+      document.getElementById('prod-price').value = product.price;
+      document.getElementById('prod-category').value = product.category;
+      document.getElementById('prod-desc').value = product.description || '';
+
+      // Preview old image
+      if (product.image) {
+        previewImg.src = product.image;
+        previewImg.style.display = 'block';
+        placeholderContent.style.display = 'none';
+      }
+
+      openModal();
+    }
+
+    // Run Data Loader
+    loadAdminData();
+  </script>
+</body>
+</html>

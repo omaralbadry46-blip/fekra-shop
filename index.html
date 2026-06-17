@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فكرة شوب | Fekra Shop - متجر إلكتروني بسيط وعصري</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="files/fekra shop (64 x 64 px).png">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+  
+  <!-- Ionicons for modern icons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="files/fekra shop 150.200.png" alt="لوجو فكرة شوب" class="logo-img">
+      </a>
+      
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-item active">الرئيسية</a>
+        <a href="index.html#catalog" class="nav-item">المنتجات</a>
+        <a href="admin.html" class="nav-item">لوحة الإدارة</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Search icon/action -->
+        <a href="#catalog" class="icon-btn" id="search-nav-btn">
+          <ion-icon name="search-outline"></ion-icon>
+        </a>
+        
+        <!-- Cart Badge Button -->
+        <button class="icon-btn" id="cart-icon-btn">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span class="cart-badge">0</span>
+        </button>
+        
+        <!-- Mobile Menu Toggle -->
+        <button class="icon-btn menu-toggle">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <!-- Huge faded backdrop logo for high premium minimalism aesthetic -->
+      <img src="files/fekra shop (500 x 500 px).png" alt="Fekra Backdrop Logo" class="hero-bg-logo">
+      
+      <div class="hero-content">
+        <div class="hero-text">
+          <span class="hero-tagline">مرحباً بك في فكرة شوب</span>
+          <h1 class="hero-title">منتجات ذكية<br>لنمط حياة <span>بسيط ومميز</span></h1>
+          <p class="hero-desc">نحن نؤمن بأن الأناقة تكمن في البساطة. اكتشف تشكيلتنا المنسقة بعناية من المنتجات المبتكرة بأعلى جودة وأفضل تصميم.</p>
+          <div class="hero-buttons">
+            <a href="#catalog" class="btn btn-primary">تصفح المنتجات</a>
+            <a href="admin.html" class="btn btn-secondary">إضافة منتجك الأول</a>
+          </div>
+        </div>
+        <div class="hero-image-container">
+          <div class="hero-banner-card">
+            <!-- Modern design showcasing logo -->
+            <img src="files/fekra shop (500 x 500 px).png" alt="لوجو فكرة">
+            <h3 style="color: var(--color-gold); font-weight:700; font-size:1.4rem;">فكرة شوب</h3>
+            <p style="font-size:0.85rem; color:var(--text-gray);">Minimalist E-Commerce Hub</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Catalog Section -->
+    <section id="catalog" class="catalog-section">
+      <div class="section-header">
+        <span style="color: var(--color-gold); font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">معرض الفترينات</span>
+        <h2 class="section-title">اكتشف منتجاتنا</h2>
+      </div>
+
+      <!-- Controls & Filters -->
+      <div class="catalog-controls">
+        <div class="filter-categories" id="categories-container">
+          <button class="category-btn active" data-category="all">الكل</button>
+          <button class="category-btn" data-category="إلكترونيات">إلكترونيات</button>
+          <button class="category-btn" data-category="ملابس">ملابس</button>
+          <button class="category-btn" data-category="إكسسوارات">إكسسوارات</button>
+          <button class="category-btn" data-category="أخرى">أخرى</button>
+        </div>
+
+        <div class="search-sort-box">
+          <div class="search-wrapper">
+            <input type="text" class="search-input" id="catalog-search" placeholder="ابحث عن منتج...">
+            <span class="search-icon"><ion-icon name="search-outline"></ion-icon></span>
+          </div>
+          
+          <select class="sort-select" id="catalog-sort">
+            <option value="default">الترتيب الافتراضي</option>
+            <option value="price-asc">السعر: من الأقل للأعلى</option>
+            <option value="price-desc">السعر: من الأعلى للأقل</option>
+            <option value="newest">الأحدث وصولاً</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid-container">
+        <div class="grid-4" id="products-grid">
+          <!-- Dynamically populated via JS -->
+          <div style="grid-column: 1/-1; text-align:center; padding:50px 0; color:var(--text-muted);">
+            <p>جاري تحميل المنتجات الرائعة...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Sliding Cart Side Panel (Drawer) -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-header">
+      <h2>سلة المشتريات</h2>
+      <button class="cart-close-btn" id="cart-drawer-close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    
+    <!-- Items Container -->
+    <div class="cart-items-container" id="cart-drawer-items">
+      <!-- Generated via JS -->
+    </div>
+    
+    <!-- Footer calculations -->
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span class="cart-total-label">الإجمالي:</span>
+        <span class="cart-total-price"><span id="cart-drawer-total" class="price">0.00</span> EGP</span>
+      </div>
+      <a href="checkout.html" class="btn btn-primary cart-checkout-btn" id="cart-drawer-checkout-btn">إتمام الطلب</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="files/fekra shop 150.200.png" alt="لوجو فكرة شوب" class="logo-img">
+        <p>نقدم لعملائنا تجربة تسوق فريدة ومميزة مبنية على التبسيط والجودة العالية. كل قطعة تم اختيارها بعناية لتناسب ذوقكم الرفيع.</p>
+        <div class="social-links">
+          <a href="#" class="social-icon"><ion-icon name="logo-instagram"></ion-icon></a>
+          <a href="#" class="social-icon"><ion-icon name="logo-facebook"></ion-icon></a>
+          <a href="#" class="social-icon"><ion-icon name="logo-twitter"></ion-icon></a>
+        </div>
+      </div>
+      
+      <div class="footer-links">
+        <h3>روابط سريعة</h3>
+        <ul>
+          <li><a href="index.html">الصفحة الرئيسية</a></li>
+          <li><a href="#catalog">المنتجات</a></li>
+          <li><a href="admin.html">لوحة التحكم</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h3>مساعدة ودعم</h3>
+        <ul>
+          <li><a href="#">الشحن والتوصيل</a></li>
+          <li><a href="#">سياسة الاسترجاع</a></li>
+          <li><a href="#">اتصل بنا</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="copy-text">حقوق الطبع محفوظة &copy; <span>2026</span> متجر فكرة.</div>
+      <div>صنع بكل حب وببساطة</div>
+    </div>
+  </footer>
+
+  <!-- App Logic (ES Modules) -->
+  <script type="module" src="js/main.js"></script>
+  
+  <!-- Dynamic Catalog Loader -->
+  <script type="module">
+    import { db } from './js/firebase-config.js';
+    import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { addToCart } from './js/cart-helper.js';
+    import { openCartDrawer } from './js/main.js';
+
+    let products = [];
+    let activeCategory = 'all';
+    let searchQuery = '';
+    let activeSort = 'default';
+
+    const grid = document.getElementById('products-grid');
+    const searchInput = document.getElementById('catalog-search');
+    const sortSelect = document.getElementById('catalog-sort');
+    const categoriesContainer = document.getElementById('categories-container');
+
+    // Fetch products from Firestore
+    async function loadProducts() {
+      try {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        products = [];
+        querySnapshot.forEach((doc) => {
+          products.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Seed default products if Firebase is empty, to provide instant UI presentation
+        if (products.length === 0) {
+          products = getDemoProductsSeeder();
+        }
+
+        renderCatalog();
+      } catch (error) {
+        console.error("Error loading products from Firebase:", error);
+        // Fallback to demo products if Firebase setup is not complete
+        products = getDemoProductsSeeder();
+        renderCatalog();
+      }
+    }
+
+    // Standard demo seeder for instant styling demonstration
+    function getDemoProductsSeeder() {
+      return [
+        {
+          id: 'demo-1',
+          title: 'ساعة يد كلاسيكية سوداء فاخرة',
+          price: 1850.00,
+          category: 'إكسسوارات',
+          image: 'files/fekra shop (500 x 500 px).png', // Use logo or standard placeholder
+          description: 'ساعة أنيقة بتصميم مينيمالست جذاب وشريط جلدي مريح مقاوم للماء.'
+        },
+        {
+          id: 'demo-2',
+          title: 'سماعات رأس لاسلكية بخاصية إلغاء الضوضاء',
+          price: 2400.00,
+          category: 'إلكترونيات',
+          image: 'files/fekra shop (500 x 500 px).png',
+          description: 'صوت نقي عالي الدقة مع وسادات أذن مريحة وبطارية تدوم لـ 40 ساعة متواصلة.'
+        },
+        {
+          id: 'demo-3',
+          title: 'حقيبة ظهر عصرية لرجال الأعمال والرحلات',
+          price: 1200.00,
+          category: 'أخرى',
+          image: 'files/fekra shop (500 x 500 px).png',
+          description: 'حقيبة ظهر أنيقة ومضادة للسرقة ومقاومة للمياه مع منفذ شحن USB ذكي.'
+        },
+        {
+          id: 'demo-4',
+          title: 'سترة قماشية سوداء كاجوال بياقة مرتفعة',
+          price: 850.00,
+          category: 'ملابس',
+          image: 'files/fekra shop (500 x 500 px).png',
+          description: 'سترة ثقيلة مصنوعة من القطن الطبيعي 100% لتوفير أقصى درجات الراحة والدفء.'
+        }
+      ];
+    }
+
+    function renderCatalog() {
+      // Filter products
+      let filtered = products.filter(p => {
+        const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
+        const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesCategory && matchesSearch;
+      });
+
+      // Sort products
+      if (activeSort === 'price-asc') {
+        filtered.sort((a, b) => Number(a.price) - Number(b.price));
+      } else if (activeSort === 'price-desc') {
+        filtered.sort((a, b) => Number(b.price) - Number(a.price));
+      } else if (activeSort === 'newest') {
+        filtered.sort((a, b) => {
+          const dateA = a.createdAt?.seconds ? a.createdAt.seconds : 0;
+          const dateB = b.createdAt?.seconds ? b.createdAt.seconds : 0;
+          return dateB - dateA;
+        });
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding:50px 0; color:var(--text-muted);">
+            <p>عذراً، لم نجد أي منتجات تطابق بحثك حالياً.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      filtered.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div class="product-img-wrapper">
+            <a href="product.html?id=${product.id}">
+              <img src="${product.image || 'files/fekra shop (500 x 500 px).png'}" alt="${product.title}" class="product-card-img" onerror="this.src='files/fekra shop (500 x 500 px).png'">
+            </a>
+            <span class="product-badge">${product.category}</span>
+          </div>
+          <div class="product-info-wrapper">
+            <span class="product-card-category">${product.category}</span>
+            <a href="product.html?id=${product.id}"><h3 class="product-card-title">${product.title}</h3></a>
+            <div class="product-card-bottom">
+              <span class="product-card-price price">${Number(product.price).toFixed(2)} EGP</span>
+              <button class="add-to-cart-btn-quick" data-id="${product.id}">
+                <ion-icon name="cart-outline" style="font-size: 1.25rem;"></ion-icon>
+              </button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Attach event listeners to cart buttons
+      grid.querySelectorAll('.add-to-cart-btn-quick').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute('data-id');
+          const product = products.find(p => p.id === id);
+          if (product) {
+            addToCart(product, 1);
+            openCartDrawer();
+          }
+        });
+      });
+    }
+
+    // Event Listeners for controls
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderCatalog();
+      });
+    }
+
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        activeSort = e.target.value;
+        renderCatalog();
+      });
+    }
+
+    if (categoriesContainer) {
+      categoriesContainer.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          categoriesContainer.querySelector('.category-btn.active').classList.remove('active');
+          btn.classList.add('active');
+          activeCategory = btn.getAttribute('data-category');
+          renderCatalog();
+        });
+      });
+    }
+
+    // Run loader
+    loadProducts();
+  </script>
+</body>
+</html>

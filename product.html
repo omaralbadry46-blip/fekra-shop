@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل المنتج | Fekra Shop</title>
+  <link rel="icon" type="image/png" href="files/fekra shop (64 x 64 px).png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/product.css">
+  <link rel="stylesheet" href="css/home.css"> <!-- Reused for related products catalog card styling -->
+  
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="files/fekra shop 150.200.png" alt="لوجو فكرة شوب" class="logo-img">
+      </a>
+      
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-item">الرئيسية</a>
+        <a href="index.html#catalog" class="nav-item">المنتجات</a>
+        <a href="admin.html" class="nav-item">لوحة الإدارة</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="index.html#catalog" class="icon-btn">
+          <ion-icon name="search-outline"></ion-icon>
+        </a>
+        <button class="icon-btn" id="cart-icon-btn">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span class="cart-badge">0</span>
+        </button>
+        <button class="icon-btn menu-toggle">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="product-detail-container">
+      <!-- Back Link -->
+      <div class="back-btn-wrapper">
+        <a href="index.html#catalog" class="back-btn">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+          <span>العودة لكتالوج المنتجات</span>
+        </a>
+      </div>
+
+      <!-- Detail Grid -->
+      <div class="product-detail-grid" id="product-detail-grid">
+        <div style="grid-column: 1/-1; text-align:center; padding: 100px 0; color:var(--text-muted);">
+          <p>جاري تحميل تفاصيل المنتج الفاخر...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    <section class="related-section">
+      <div class="section-header" style="margin-bottom: 30px;">
+        <h3 class="section-title" style="font-size: 1.5rem;">منتجات ذات صلة</h3>
+      </div>
+      <div class="grid-4" id="related-products-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-header">
+      <h2>سلة المشتريات</h2>
+      <button class="cart-close-btn" id="cart-drawer-close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="cart-items-container" id="cart-drawer-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span class="cart-total-label">الإجمالي:</span>
+        <span class="cart-total-price"><span id="cart-drawer-total" class="price">0.00</span> EGP</span>
+      </div>
+      <a href="checkout.html" class="btn btn-primary cart-checkout-btn" id="cart-drawer-checkout-btn">إتمام الطلب</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="files/fekra shop 150.200.png" alt="لوجو فكرة شوب" class="logo-img">
+        <p>نقدم لعملائنا تجربة تسوق فريدة ومميزة مبنية على التبسيط والجودة العالية. كل قطعة تم اختيارها بعناية لتناسب ذوقكم الرفيع.</p>
+        <div class="social-links">
+          <a href="#" class="social-icon"><ion-icon name="logo-instagram"></ion-icon></a>
+          <a href="#" class="social-icon"><ion-icon name="logo-facebook"></ion-icon></a>
+          <a href="#" class="social-icon"><ion-icon name="logo-twitter"></ion-icon></a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h3>روابط سريعة</h3>
+        <ul>
+          <li><a href="index.html">الرئيسية</a></li>
+          <li><a href="index.html#catalog">المنتجات</a></li>
+          <li><a href="admin.html">لوحة التحكم</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>مساعدة ودعم</h3>
+        <ul>
+          <li><a href="#">الشحن والتوصيل</a></li>
+          <li><a href="#">سياسة الاسترجاع</a></li>
+          <li><a href="#">اتصل بنا</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="copy-text">حقوق الطبع محفوظة &copy; <span>2026</span> متجر فكرة.</div>
+      <div>صنع بكل حب وببساطة</div>
+    </div>
+  </footer>
+
+  <!-- App logic scripts -->
+  <script type="module" src="js/main.js"></script>
+  
+  <script type="module">
+    import { db } from './js/firebase-config.js';
+    import { doc, getDoc, collection, getDocs, limit, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { addToCart } from './js/cart-helper.js';
+    import { openCartDrawer } from './js/main.js';
+
+    // Demo products backup for instant loading
+    const demoProducts = [
+      {
+        id: 'demo-1',
+        title: 'ساعة يد كلاسيكية سوداء فاخرة',
+        price: 1850.00,
+        category: 'إكسسوارات',
+        image: 'files/fekra shop (500 x 500 px).png',
+        description: 'ساعة أنيقة بتصميم مينيمالست جذاب وشريط جلدي مريح مقاوم للماء.'
+      },
+      {
+        id: 'demo-2',
+        title: 'سماعات رأس لاسلكية بخاصية إلغاء الضوضاء',
+        price: 2400.00,
+        category: 'إلكترونيات',
+        image: 'files/fekra shop (500 x 500 px).png',
+        description: 'صوت نقي عالي الدقة مع وسادات أذن مريحة وبطارية تدوم لـ 40 ساعة متواصلة.'
+      },
+      {
+        id: 'demo-3',
+        title: 'حقيبة ظهر عصرية لرجال الأعمال والرحلات',
+        price: 1200.00,
+        category: 'أخرى',
+        image: 'files/fekra shop (500 x 500 px).png',
+        description: 'حقيبة ظهر أنيقة ومضادة للسرقة ومقاومة للمياه مع منفذ شحن USB ذكي.'
+      },
+      {
+        id: 'demo-4',
+        title: 'سترة قماشية سوداء كاجوال بياقة مرتفعة',
+        price: 850.00,
+        category: 'ملابس',
+        image: 'files/fekra shop (500 x 500 px).png',
+        description: 'سترة ثقيلة مصنوعة من القطن الطبيعي 100% لتوفير أقصى درجات الراحة والدفء.'
+      }
+    ];
+
+    let currentProduct = null;
+    let qtySelected = 1;
+
+    // Get URL Parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    async function loadProductDetail() {
+      if (!productId) {
+        renderError('لم يتم تحديد منتج صحيح.');
+        return;
+      }
+
+      try {
+        // First try Firebase
+        const docRef = doc(db, "products", productId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          currentProduct = { id: docSnap.id, ...docSnap.data() };
+          renderProduct(currentProduct);
+          loadRelatedProducts(currentProduct.category, currentProduct.id);
+        } else {
+          // Check if it's in demo products
+          const demo = demoProducts.find(p => p.id === productId);
+          if (demo) {
+            currentProduct = demo;
+            renderProduct(currentProduct);
+            loadRelatedProducts(currentProduct.category, currentProduct.id);
+          } else {
+            renderError('عذراً، هذا المنتج غير موجود أو تم حذفه.');
+          }
+        }
+      } catch (error) {
+        console.error("Error loading product detail from Firebase:", error);
+        // Fallback to demo database
+        const demo = demoProducts.find(p => p.id === productId);
+        if (demo) {
+          currentProduct = demo;
+          renderProduct(currentProduct);
+          loadRelatedProducts(currentProduct.category, currentProduct.id);
+        } else {
+          renderError('حدث خطأ أثناء تحميل بيانات المنتج. يرجى التأكد من ربط الفايربيز.');
+        }
+      }
+    }
+
+    function renderProduct(product) {
+      const grid = document.getElementById('product-detail-grid');
+      if (!grid) return;
+
+      document.title = `${product.title} | Fekra Shop`;
+
+      grid.innerHTML = `
+        <!-- Left: Image frame -->
+        <div class="product-gallery">
+          <div class="main-image-frame">
+            <img src="${product.image || 'files/fekra shop (500 x 500 px).png'}" alt="${product.title}" id="main-product-image" onerror="this.src='files/fekra shop (500 x 500 px).png'">
+          </div>
+        </div>
+
+        <!-- Right: Specifications -->
+        <div class="product-specs">
+          <div class="product-meta-top">
+            <span class="product-detail-category">${product.category}</span>
+            <h1 class="product-detail-title">${product.title}</h1>
+          </div>
+
+          <div class="product-detail-price-box">
+            <span class="product-detail-price price">${Number(product.price).toFixed(2)} EGP</span>
+          </div>
+
+          <div class="product-detail-desc">
+            <p>${product.description || 'لا يوجد وصف متاح لهذا المنتج حالياً.'}</p>
+          </div>
+
+          <div class="purchase-actions-box">
+            <div class="qty-selection-row">
+              <span class="qty-label">الكمية:</span>
+              <div class="quantity-control product-qty-control">
+                <button class="qty-btn" id="qty-dec-detail">-</button>
+                <span class="qty-value" id="qty-value-detail">1</span>
+                <button class="qty-btn" id="qty-inc-detail">+</button>
+              </div>
+            </div>
+
+            <button class="btn btn-primary add-to-cart-detail-btn" id="add-to-cart-detail-btn">
+              <ion-icon name="cart-outline" style="font-size: 1.4rem;"></ion-icon>
+              <span>إضافة إلى السلة</span>
+            </button>
+          </div>
+
+          <div class="extra-specs-list">
+            <div class="spec-item">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              <span>ضمان جودة وأصالة المنتج بنسبة 100%</span>
+            </div>
+            <div class="spec-item">
+              <ion-icon name="paper-plane-outline"></ion-icon>
+              <span>شحن سريع لجميع المحافظات خلال 3-5 أيام عمل</span>
+            </div>
+            <div class="spec-item">
+              <ion-icon name="sync-outline"></ion-icon>
+              <span>سياسة استرجاع واستبدال مرنة وبسيطة خلال 14 يوماً</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Set up events for detail page elements
+      const decBtn = document.getElementById('qty-dec-detail');
+      const incBtn = document.getElementById('qty-inc-detail');
+      const qtyVal = document.getElementById('qty-value-detail');
+      const addBtn = document.getElementById('add-to-cart-detail-btn');
+
+      if (decBtn && incBtn && qtyVal && addBtn) {
+        decBtn.addEventListener('click', () => {
+          if (qtySelected > 1) {
+            qtySelected--;
+            qtyVal.textContent = qtySelected;
+          }
+        });
+
+        incBtn.addEventListener('click', () => {
+          qtySelected++;
+          qtyVal.textContent = qtySelected;
+        });
+
+        addBtn.addEventListener('click', () => {
+          addToCart(product, qtySelected);
+          openCartDrawer();
+        });
+      }
+    }
+
+    async function loadRelatedProducts(category, currentId) {
+      const relatedGrid = document.getElementById('related-products-grid');
+      if (!relatedGrid) return;
+
+      try {
+        const q = query(
+          collection(db, "products"),
+          where("category", "==", category),
+          limit(5)
+        );
+        const querySnapshot = await getDocs(q);
+        let related = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== currentId) {
+            related.push({ id: doc.id, ...doc.data() });
+          }
+        });
+
+        // Filter limit of 4
+        related = related.slice(0, 4);
+
+        if (related.length === 0) {
+          // Populate from demo products
+          related = demoProducts.filter(p => p.category === category && p.id !== currentId).slice(0, 4);
+        }
+
+        renderRelated(related, relatedGrid);
+      } catch (error) {
+        // Fallback to demo
+        const related = demoProducts.filter(p => p.category === category && p.id !== currentId).slice(0, 4);
+        renderRelated(related, relatedGrid);
+      }
+    }
+
+    function renderRelated(list, gridEl) {
+      if (list.length === 0) {
+        gridEl.innerHTML = '<p style="color:var(--text-muted);">لا توجد منتجات مشابهة حالياً.</p>';
+        return;
+      }
+
+      gridEl.innerHTML = '';
+      list.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div class="product-img-wrapper">
+            <a href="product.html?id=${product.id}">
+              <img src="${product.image || 'files/fekra shop (500 x 500 px).png'}" alt="${product.title}" class="product-card-img" onerror="this.src='files/fekra shop (500 x 500 px).png'">
+            </a>
+          </div>
+          <div class="product-info-wrapper">
+            <span class="product-card-category">${product.category}</span>
+            <a href="product.html?id=${product.id}"><h3 class="product-card-title">${product.title}</h3></a>
+            <div class="product-card-bottom">
+              <span class="product-card-price price">${Number(product.price).toFixed(2)} EGP</span>
+              <button class="add-to-cart-btn-quick" data-id="${product.id}">
+                <ion-icon name="cart-outline" style="font-size: 1.25rem;"></ion-icon>
+              </button>
+            </div>
+          </div>
+        `;
+        gridEl.appendChild(card);
+      });
+
+      gridEl.querySelectorAll('.add-to-cart-btn-quick').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute('data-id');
+          // Find either in Firebase doc or demo products list
+          let product = list.find(p => p.id === id);
+          if (product) {
+            addToCart(product, 1);
+            openCartDrawer();
+          }
+        });
+      });
+    }
+
+    function renderError(message) {
+      const grid = document.getElementById('product-detail-grid');
+      if (grid) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding:80px 0;">
+            <p style="color:#ff4d4d; font-size:1.15rem; margin-bottom:20px;">${message}</p>
+            <a href="index.html#catalog" class="btn btn-secondary">العودة للرئيسية</a>
+          </div>
+        `;
+      }
+    }
+
+    loadProductDetail();
+  </script>
+</body>
+</html>

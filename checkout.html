@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إتمام الطلب | Fekra Shop</title>
+  <link rel="icon" type="image/png" href="files/fekra shop (64 x 64 px).png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cart.css">
+
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body>
+
+  <!-- App Header -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="files/fekra shop 150.200.png" alt="لوجو فكرة شوب" class="logo-img">
+      </a>
+
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-item">الرئيسية</a>
+        <a href="index.html#catalog" class="nav-item">المنتجات</a>
+        <a href="admin.html" class="nav-item">لوحة الإدارة</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="icon-btn" id="cart-icon-btn">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span class="cart-badge">0</span>
+        </button>
+        <button class="icon-btn menu-toggle">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- Main Content -->
+  <main>
+    <div class="checkout-container" id="checkout-root">
+
+      <div class="checkout-title-row">
+        <h1 class="checkout-title">مراجعة سلتك وإتمام الطلب</h1>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="checkout-layout" id="checkout-main-layout">
+
+        <!-- Form Panel (Shipping & Billing) -->
+        <div class="checkout-form-panel">
+          <h2 class="checkout-section-title">بيانات الشحن والتوصيل</h2>
+
+          <form id="shipping-form">
+            <div class="form-group">
+              <label for="fullname">الاسم الكامل *</label>
+              <input type="text" id="fullname" class="form-control" placeholder="اسمك الثنائي أو الثلاثي" required>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">رقم الهاتف المحمول *</label>
+              <input type="tel" id="phone" class="form-control" placeholder="رقم متاح للمندوب للتواصل معكم" required
+                style="direction: ltr; text-align: right;">
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="city">المحافظة / المدينة *</label>
+                <select id="city" class="form-control" required>
+                  <option value="" disabled selected>اختر محافظتك</option>
+                  <option value="القاهرة">القاهرة</option>
+                  <option value="الجيزة">الجيزة</option>
+                  <option value="الإسكندرية">الإسكندرية</option>
+                  <option value="القليوبية">القليوبية</option>
+                  <option value="المنوفية">المنوفية</option>
+                  <option value="الغربية">الغربية</option>
+                  <option value="الدقهلية">الدقهلية</option>
+                  <option value="الشرقية">الشرقية</option>
+                  <option value="البحيرة">البحيرة</option>
+                  <option value="الفيوم">الفيوم</option>
+                  <option value="بني سويف">بني سويف</option>
+                  <option value="المنيا">المنيا</option>
+                  <option value="أسيوط">أسيوط</option>
+                  <option value="سوهاج">سوهاج</option>
+                  <option value="قنا">قنا</option>
+                  <option value="الأقصر">الأقصر</option>
+                  <option value="أسوان">أسوان</option>
+                  <option value="أخرى">محافظة أخرى</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="address">العنوان بالتفصيل *</label>
+                <input type="text" id="address" class="form-control" placeholder="الشارع، رقم المبنى، رقم الشقة"
+                  required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">ملاحظات إضافية للطلب (اختياري)</label>
+              <textarea id="notes" class="form-control"
+                placeholder="مواعيد التوصيل المفضلة، أو علامات مميزة للعنوان"></textarea>
+            </div>
+
+            <div style="margin-top: 30px;">
+              <button type="submit" class="btn btn-primary" id="btn-submit-order" style="width: 100%; height: 50px;">
+                <ion-icon name="checkmark-circle-outline" style="font-size: 1.35rem;"></ion-icon>
+                <span>تأكيد الطلب وشحن المنتجات</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Summary Panel -->
+        <div class="checkout-summary-panel">
+          <h2 class="checkout-section-title">ملخص طلبك</h2>
+
+          <div class="summary-items-list" id="checkout-summary-items">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <div class="summary-calculations">
+            <div class="calc-row">
+              <span>قيمة المنتجات:</span>
+              <span class="price"><span id="sum-subtotal">0.00</span> EGP</span>
+            </div>
+            <div class="calc-row">
+              <span>تكلفة الشحن والتوصيل:</span>
+              <span style="color: #2ecc71; font-weight:600;">مجاناً لفترة محدودة</span>
+            </div>
+            <div class="calc-row total-row">
+              <span>الإجمالي الكلي:</span>
+              <span class="price"><span id="sum-total">0.00</span> EGP</span>
+            </div>
+          </div>
+
+          <div
+            style="background-color:rgba(238, 186, 44, 0.05); border: 1px dashed var(--color-gold); padding: 15px; text-align: center; color: var(--text-gray); font-size: 0.85rem;">
+            الدفع سيكون نقداً عند الاستلام (COD) فور فحص العميل للمنتج.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="files/fekra shop 150.200.png" alt="لوجو فكرة شوب" class="logo-img">
+        <p>نقدم لعملائنا تجربة تسوق فريدة ومميزة مبنية على التبسيط والجودة العالية. كل قطعة تم اختيارها بعناية لتناسب
+          ذوقكم الرفيع.</p>
+        <div class="social-links">
+          <a href="#" class="social-icon"><ion-icon name="logo-instagram"></ion-icon></a>
+          <a href="#" class="social-icon"><ion-icon name="logo-facebook"></ion-icon></a>
+          <a href="#" class="social-icon"><ion-icon name="logo-twitter"></ion-icon></a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h3>روابط سريعة</h3>
+        <ul>
+          <li><a href="index.html">الرئيسية</a></li>
+          <li><a href="index.html#catalog">المنتجات</a></li>
+          <li><a href="admin.html">لوحة التحكم</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>مساعدة ودعم</h3>
+        <ul>
+          <li><a href="#">الشحن والتوصيل</a></li>
+          <li><a href="#">سياسة الاسترجاع</a></li>
+          <li><a href="#">اتصل بنا</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="copy-text">حقوق الطبع محفوظة &copy; <span>2026</span> متجر فكرة.</div>
+      <div>صنع بكل حب وببساطة</div>
+    </div>
+  </footer>
+
+  <!-- App logic scripts -->
+  <!-- We do NOT load main.js cart toggles on checkout since it can compete with checkout actions -->
+  <script type="module">
+    import { getCart, clearCart, getCartTotal, getCartCount, showToast } from './js/cart-helper.js';
+    import { db } from './js/firebase-config.js';
+    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCheckoutSummary();
+      updateBadgeOnly();
+
+      const form = document.getElementById('shipping-form');
+      if (form) {
+        form.addEventListener('submit', handleOrderSubmit);
+      }
+    });
+
+    function updateBadgeOnly() {
+      const badge = document.querySelector('.cart-badge');
+      if (badge) {
+        const count = getCartCount();
+        badge.textContent = count;
+        badge.style.display = count === 0 ? 'none' : 'flex';
+      }
+    }
+
+    function renderCheckoutSummary() {
+      const itemsContainer = document.getElementById('checkout-summary-items');
+      const subtotalEl = document.getElementById('sum-subtotal');
+      const totalEl = document.getElementById('sum-total');
+      const submitBtn = document.getElementById('btn-submit-order');
+
+      if (!itemsContainer) return;
+
+      const cart = getCart();
+
+      if (cart.length === 0) {
+        itemsContainer.innerHTML = `
+          <div style="text-align:center; padding: 40px 0; color:var(--text-muted);">
+            <p>سلة التسوق فارغة تماماً. يرجى إضافة منتجات لإتمام الطلب.</p>
+            <a href="index.html#catalog" class="btn btn-secondary" style="margin-top:15px; display:inline-block;">اذهب للمتجر</a>
+          </div>
+        `;
+        if (submitBtn) {
+          submitBtn.classList.add('btn-disabled');
+          submitBtn.disabled = true;
+        }
+        return;
+      }
+
+      itemsContainer.innerHTML = '';
+      cart.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'summary-item-card';
+        card.innerHTML = `
+          <div class="summary-item-info">
+            <img src="${item.image || 'files/fekra shop (500 x 500 px).png'}" alt="${item.title}" class="summary-item-img" onerror="this.src='files/fekra shop (500 x 500 px).png'">
+            <div>
+              <span class="summary-item-name">${item.title}</span>
+              <div class="summary-item-qty">الكمية: <span class="numbers">${item.quantity}</span></div>
+            </div>
+          </div>
+          <span class="summary-item-price price">${(item.price * item.quantity).toFixed(2)} EGP</span>
+        `;
+        itemsContainer.appendChild(card);
+      });
+
+      const totalVal = getCartTotal();
+      if (subtotalEl) subtotalEl.textContent = totalVal.toFixed(2);
+      if (totalEl) totalEl.textContent = totalVal.toFixed(2);
+    }
+
+    async function handleOrderSubmit(e) {
+      e.preventDefault();
+
+      const cart = getCart();
+      if (cart.length === 0) {
+        showToast('سلتك فارغة!', 'error');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-submit-order');
+      if (submitBtn) {
+        submitBtn.innerHTML = '<span>جاري إرسال طلبك الآمن...</span>';
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-disabled');
+      }
+
+      const fullname = document.getElementById('fullname').value;
+      const phone = document.getElementById('phone').value;
+      const city = document.getElementById('city').value;
+      const address = document.getElementById('address').value;
+      const notes = document.getElementById('notes').value;
+
+      const orderData = {
+        customerName: fullname,
+        phone: phone,
+        city: city,
+        address: address,
+        notes: notes,
+        items: cart.map(item => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        total: getCartTotal(),
+        status: 'pending',
+        createdAt: new Date()
+      };
+
+      try {
+        // Submit order to Firestore
+        const docRef = await addDoc(collection(db, "orders"), orderData);
+
+        // Success response
+        clearCart();
+        updateBadgeOnly();
+        renderOrderSuccess(docRef.id, fullname, phone);
+      } catch (error) {
+        console.error("Error writing order to Firestore:", error);
+
+        // Create mock success for demo offline environment or bad config, so user can see flow
+        const mockOrderId = 'order_' + Math.random().toString(36).substring(2, 9).toUpperCase();
+        clearCart();
+        updateBadgeOnly();
+        renderOrderSuccess(mockOrderId, fullname, phone, true);
+      }
+    }
+
+    function renderOrderSuccess(orderId, name, phone, isMock = false) {
+      const root = document.getElementById('checkout-root');
+      if (!root) return;
+
+      root.innerHTML = `
+        <div class="success-card">
+          <div class="success-icon">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </div>
+          <h1 class="success-title">شكراً لطلبك!</h1>
+          <p class="success-text">عزيزنا <strong>${name}</strong>، تم استقبال طلبك بنجاح وسنقوم بالتواصل معك على الرقم <strong>${phone}</strong> لتأكيد الشحن.</p>
+          <div style="font-size:0.9rem; color:var(--text-muted);">رقم وتوثيق طلبك هو:</div>
+          <div class="success-order-num">${orderId}</div>
+          ${isMock ? '<p style="color:var(--color-gold); font-size:0.8rem; margin: -5px 0 10px;">(تم الحفظ في وضع المحاكاة المحلي لعدم تهيئة Firebase بعد)</p>' : ''}
+          <div style="margin-top: 15px; display:flex; gap:15px;">
+            <a href="index.html" class="btn btn-primary">العودة للرئيسية</a>
+            <a href="index.html#catalog" class="btn btn-secondary">مواصلة التسوق</a>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+
+</html>
