@@ -17,12 +17,57 @@
       window.location.href = 'login.html';
     }
   </script>
+  
+  <style>
+    /* Premium Loader Overlay */
+    .admin-loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .admin-loader-overlay.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-spinner {
+      width: 45px;
+      height: 45px;
+      border: 3px solid #161616;
+      border-top: 3px solid #eeba2c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- Premium Loading Screen -->
+  <div id="admin-loader" class="admin-loader-overlay">
+    <div class="loader-spinner"></div>
+  </div>
 
   <!-- Noscript Warning -->
   <noscript>
     <style>
+      /* Hide loader overlay if JS is disabled */
+      .admin-loader-overlay {
+        display: none !important;
+      }
       /* Hide all elements inside the body when JS is disabled */
       body > *:not(noscript) {
         display: none !important;
@@ -652,7 +697,15 @@
     }
 
     // Run Data Loader
-    loadAdminData();
+    loadAdminData().then(() => {
+      const loader = document.getElementById('admin-loader');
+      if (loader) {
+        loader.classList.add('fade-out');
+        setTimeout(() => {
+          loader.remove();
+        }, 400); // Matches CSS transition duration
+      }
+    });
   </script>
 </body>
 </html>
