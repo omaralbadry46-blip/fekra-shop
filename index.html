@@ -27,7 +27,6 @@
       <nav class="nav-menu">
         <a href="index.html" class="nav-item active">الرئيسية</a>
         <a href="index.html#catalog" class="nav-item">المنتجات</a>
-        <a href="admin.html" class="nav-item">لوحة الإدارة</a>
       </nav>
 
       <div class="nav-actions">
@@ -64,7 +63,6 @@
           <p class="hero-desc">نحن نؤمن بأن الأناقة تكمن في البساطة. اكتشف تشكيلتنا المنسقة بعناية من المنتجات المبتكرة بأعلى جودة وأفضل تصميم.</p>
           <div class="hero-buttons">
             <a href="#catalog" class="btn btn-primary">تصفح المنتجات</a>
-            <a href="admin.html" class="btn btn-secondary">إضافة منتجك الأول</a>
           </div>
         </div>
         <div class="hero-image-container">
@@ -165,7 +163,6 @@
         <ul>
           <li><a href="index.html">الصفحة الرئيسية</a></li>
           <li><a href="#catalog">المنتجات</a></li>
-          <li><a href="admin.html">لوحة التحكم</a></li>
         </ul>
       </div>
 
@@ -215,56 +212,12 @@
           products.push({ id: doc.id, ...doc.data() });
         });
 
-        // Seed default products if Firebase is empty, to provide instant UI presentation
-        if (products.length === 0) {
-          products = getDemoProductsSeeder();
-        }
-
         renderCatalog();
       } catch (error) {
         console.error("Error loading products from Firebase:", error);
-        // Fallback to demo products if Firebase setup is not complete
-        products = getDemoProductsSeeder();
+        products = [];
         renderCatalog();
       }
-    }
-
-    // Standard demo seeder for instant styling demonstration
-    function getDemoProductsSeeder() {
-      return [
-        {
-          id: 'demo-1',
-          title: 'ساعة يد كلاسيكية سوداء فاخرة',
-          price: 1850.00,
-          category: 'إكسسوارات',
-          image: 'files/fekra shop (500 x 500 px).png', // Use logo or standard placeholder
-          description: 'ساعة أنيقة بتصميم مينيمالست جذاب وشريط جلدي مريح مقاوم للماء.'
-        },
-        {
-          id: 'demo-2',
-          title: 'سماعات رأس لاسلكية بخاصية إلغاء الضوضاء',
-          price: 2400.00,
-          category: 'إلكترونيات',
-          image: 'files/fekra shop (500 x 500 px).png',
-          description: 'صوت نقي عالي الدقة مع وسادات أذن مريحة وبطارية تدوم لـ 40 ساعة متواصلة.'
-        },
-        {
-          id: 'demo-3',
-          title: 'حقيبة ظهر عصرية لرجال الأعمال والرحلات',
-          price: 1200.00,
-          category: 'أخرى',
-          image: 'files/fekra shop (500 x 500 px).png',
-          description: 'حقيبة ظهر أنيقة ومضادة للسرقة ومقاومة للمياه مع منفذ شحن USB ذكي.'
-        },
-        {
-          id: 'demo-4',
-          title: 'سترة قماشية سوداء كاجوال بياقة مرتفعة',
-          price: 850.00,
-          category: 'ملابس',
-          image: 'files/fekra shop (500 x 500 px).png',
-          description: 'سترة ثقيلة مصنوعة من القطن الطبيعي 100% لتوفير أقصى درجات الراحة والدفء.'
-        }
-      ];
     }
 
     function renderCatalog() {

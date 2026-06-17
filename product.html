@@ -24,7 +24,6 @@
       <nav class="nav-menu">
         <a href="index.html" class="nav-item">الرئيسية</a>
         <a href="index.html#catalog" class="nav-item">المنتجات</a>
-        <a href="admin.html" class="nav-item">لوحة الإدارة</a>
       </nav>
 
       <div class="nav-actions">
@@ -108,7 +107,6 @@
         <ul>
           <li><a href="index.html">الرئيسية</a></li>
           <li><a href="index.html#catalog">المنتجات</a></li>
-          <li><a href="admin.html">لوحة التحكم</a></li>
         </ul>
       </div>
       <div class="footer-links">
@@ -136,40 +134,7 @@
     import { openCartDrawer } from './js/main.js';
 
     // Demo products backup for instant loading
-    const demoProducts = [
-      {
-        id: 'demo-1',
-        title: 'ساعة يد كلاسيكية سوداء فاخرة',
-        price: 1850.00,
-        category: 'إكسسوارات',
-        image: 'files/fekra shop (500 x 500 px).png',
-        description: 'ساعة أنيقة بتصميم مينيمالست جذاب وشريط جلدي مريح مقاوم للماء.'
-      },
-      {
-        id: 'demo-2',
-        title: 'سماعات رأس لاسلكية بخاصية إلغاء الضوضاء',
-        price: 2400.00,
-        category: 'إلكترونيات',
-        image: 'files/fekra shop (500 x 500 px).png',
-        description: 'صوت نقي عالي الدقة مع وسادات أذن مريحة وبطارية تدوم لـ 40 ساعة متواصلة.'
-      },
-      {
-        id: 'demo-3',
-        title: 'حقيبة ظهر عصرية لرجال الأعمال والرحلات',
-        price: 1200.00,
-        category: 'أخرى',
-        image: 'files/fekra shop (500 x 500 px).png',
-        description: 'حقيبة ظهر أنيقة ومضادة للسرقة ومقاومة للمياه مع منفذ شحن USB ذكي.'
-      },
-      {
-        id: 'demo-4',
-        title: 'سترة قماشية سوداء كاجوال بياقة مرتفعة',
-        price: 850.00,
-        category: 'ملابس',
-        image: 'files/fekra shop (500 x 500 px).png',
-        description: 'سترة ثقيلة مصنوعة من القطن الطبيعي 100% لتوفير أقصى درجات الراحة والدفء.'
-      }
-    ];
+    const demoProducts = [];
 
     let currentProduct = null;
     let qtySelected = 1;
@@ -194,27 +159,11 @@
           renderProduct(currentProduct);
           loadRelatedProducts(currentProduct.category, currentProduct.id);
         } else {
-          // Check if it's in demo products
-          const demo = demoProducts.find(p => p.id === productId);
-          if (demo) {
-            currentProduct = demo;
-            renderProduct(currentProduct);
-            loadRelatedProducts(currentProduct.category, currentProduct.id);
-          } else {
-            renderError('عذراً، هذا المنتج غير موجود أو تم حذفه.');
-          }
+          renderError('عذراً، هذا المنتج غير موجود أو تم حذفه.');
         }
       } catch (error) {
         console.error("Error loading product detail from Firebase:", error);
-        // Fallback to demo database
-        const demo = demoProducts.find(p => p.id === productId);
-        if (demo) {
-          currentProduct = demo;
-          renderProduct(currentProduct);
-          loadRelatedProducts(currentProduct.category, currentProduct.id);
-        } else {
-          renderError('حدث خطأ أثناء تحميل بيانات المنتج. يرجى التأكد من ربط الفايربيز.');
-        }
+        renderError('حدث خطأ أثناء تحميل بيانات المنتج. يرجى التأكد من ربط الفايربيز.');
       }
     }
 
@@ -328,15 +277,13 @@
         related = related.slice(0, 4);
 
         if (related.length === 0) {
-          // Populate from demo products
-          related = demoProducts.filter(p => p.category === category && p.id !== currentId).slice(0, 4);
+          relatedGrid.innerHTML = '<p style="color:var(--text-muted);">لا توجد منتجات مشابهة حالياً.</p>';
+          return;
         }
 
         renderRelated(related, relatedGrid);
       } catch (error) {
-        // Fallback to demo
-        const related = demoProducts.filter(p => p.category === category && p.id !== currentId).slice(0, 4);
-        renderRelated(related, relatedGrid);
+        relatedGrid.innerHTML = '<p style="color:var(--text-muted);">لا توجد منتجات مشابهة حالياً.</p>';
       }
     }
 
