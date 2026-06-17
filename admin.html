@@ -151,6 +151,7 @@
       <div class="admin-nav-tabs">
         <button class="admin-tab-btn active" id="tab-products-btn">إدارة المنتجات</button>
         <button class="admin-tab-btn" id="tab-orders-btn">طلبات العملاء</button>
+        <button class="admin-tab-btn" id="tab-shipping-btn">أسعار الشحن</button>
       </div>
 
       <!-- Overview Stats Cards -->
@@ -203,6 +204,27 @@
         
         <div class="orders-list" id="orders-list-container">
           <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- SHIPPING TAB PANEL -->
+      <div class="tab-panel d-none" id="panel-shipping">
+        <h2 style="font-size: 1.25rem; font-weight:700; color:var(--color-gold); margin-bottom: 12px;">تحديد أسعار الشحن والتوصيل للمحافظات</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 24px;">يمكنك هنا تعديل سعر الشحن لكل محافظة. المحافظات التي لم يتم تعديلها يدوياً ستعتمد السعر الافتراضي (100 EGP).</p>
+        
+        <div class="shipping-grid-wrapper table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>المحافظة</th>
+                <th>سعر الشحن (EGP)</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="shipping-rates-table-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -297,21 +319,37 @@
     // Tab toggling
     const tabProductsBtn = document.getElementById('tab-products-btn');
     const tabOrdersBtn = document.getElementById('tab-orders-btn');
+    const tabShippingBtn = document.getElementById('tab-shipping-btn');
     const panelProducts = document.getElementById('panel-products');
     const panelOrders = document.getElementById('panel-orders');
+    const panelShipping = document.getElementById('panel-shipping');
+
+    function deactivateAllTabs() {
+      tabProductsBtn.classList.remove('active');
+      tabOrdersBtn.classList.remove('active');
+      tabShippingBtn.classList.remove('active');
+      panelProducts.classList.add('d-none');
+      panelOrders.classList.add('d-none');
+      panelShipping.classList.add('d-none');
+    }
 
     tabProductsBtn.addEventListener('click', () => {
+      deactivateAllTabs();
       tabProductsBtn.classList.add('active');
-      tabOrdersBtn.classList.remove('active');
       panelProducts.classList.remove('d-none');
-      panelOrders.classList.add('d-none');
     });
 
     tabOrdersBtn.addEventListener('click', () => {
+      deactivateAllTabs();
       tabOrdersBtn.classList.add('active');
-      tabProductsBtn.classList.remove('active');
       panelOrders.classList.remove('d-none');
-      panelProducts.classList.add('d-none');
+    });
+
+    tabShippingBtn.addEventListener('click', () => {
+      deactivateAllTabs();
+      tabShippingBtn.classList.add('active');
+      panelShipping.classList.remove('d-none');
+      loadShippingRates();
     });
 
     // Main logic Imports
@@ -438,6 +476,9 @@
           ? new Date(order.createdAt.seconds * 1000).toLocaleString('ar-EG')
           : new Date(order.createdAt || Date.now()).toLocaleString('ar-EG');
           
+        const shippingFee = order.shippingFee !== undefined ? Number(order.shippingFee) : 0;
+        const productsSubtotal = Number(order.total) - shippingFee;
+
         const card = document.createElement('div');
         card.className = 'order-card';
         card.innerHTML = `
@@ -470,9 +511,16 @@
           </div>
 
           <div class="order-card-footer">
-            <div class="order-total-price">
-              <span>الإجمالي الكلي:</span>
-              <span class="price text-gold">${Number(order.total).toFixed(2)} EGP</span>
+            <div class="order-total-price" style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+              <div style="font-size:0.85rem; color:var(--text-gray); margin-bottom: 4px;">
+                <span>المنتجات:</span> <span class="numbers">${productsSubtotal.toFixed(2)} EGP</span>
+                <span style="margin: 0 8px;">|</span>
+                <span>الشحن (${order.city}):</span> <span class="numbers">${order.shippingFee !== undefined ? shippingFee.toFixed(2) + ' EGP' : 'شحن مجاني (قديم)'}</span>
+              </div>
+              <div style="font-size:1.05rem;">
+                <span>الإجمالي الكلي:</span>
+                <span class="price text-gold">${Number(order.total).toFixed(2)} EGP</span>
+              </div>
             </div>
             
             <div class="order-actions">
@@ -507,6 +555,91 @@
         case 'cancelled': return 'ملغي';
         default: return 'قيد الانتظار';
       }
+    }
+
+    const GOVERNORATES = [
+      "القاهرة", "الجيزة", "الإسكندرية", "القليوبية", "المنوفية", 
+      "الغربية", "الدقهلية", "الشرقية", "البحيرة", "الفيوم", 
+      "بني سويف", "المنيا", "أسيوط", "سوهاج", "قنا", 
+      "الأقصر", "أسوان", "أخرى"
+    ];
+
+    let shippingRates = {};
+
+    async function loadShippingRates() {
+      const tbody = document.getElementById('shipping-rates-table-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:20px;">جاري تحميل أسعار الشحن...</td></tr>`;
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "shipping_rates"));
+        shippingRates = {};
+        querySnapshot.forEach((doc) => {
+          shippingRates[doc.id] = doc.data().rate;
+        });
+        
+        renderShippingRatesTable(tbody);
+      } catch (error) {
+        console.error("Error fetching shipping rates:", error);
+        showToast("حدث خطأ أثناء تحميل أسعار الشحن", "error");
+      }
+    }
+
+    function renderShippingRatesTable(tbody) {
+      tbody.innerHTML = '';
+      GOVERNORATES.forEach(govName => {
+        const rate = shippingRates[govName] !== undefined ? shippingRates[govName] : 100;
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 600; font-size:1rem; color:var(--text-white);">${govName === 'أخرى' ? 'محافظة أخرى (الافتراضي)' : govName}</td>
+          <td>
+            <input type="number" min="0" value="${rate}" class="form-control shipping-rate-input" data-gov="${govName}" style="width:120px; text-align:center; display:inline-block; font-weight:bold; color:var(--color-gold);">
+          </td>
+          <td>
+            <button class="btn btn-primary btn-save-rate" data-gov="${govName}" style="padding:6px 16px; font-size:0.85rem;">
+              <ion-icon name="save-outline" style="vertical-align: middle; margin-left: 5px;"></ion-icon>
+              <span>حفظ</span>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll('.btn-save-rate').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const gov = btn.getAttribute('data-gov');
+          const input = tbody.querySelector(`.shipping-rate-input[data-gov="${gov}"]`);
+          const rateVal = Number(input.value);
+
+          if (isNaN(rateVal) || rateVal < 0) {
+            showToast("يرجى إدخال سعر شحن صحيح وموجب", "error");
+            return;
+          }
+
+          btn.disabled = true;
+          btn.innerHTML = '<span>جاري الحفظ...</span>';
+
+          try {
+            await setDoc(doc(db, "shipping_rates", gov), {
+              rate: rateVal,
+              updatedAt: new Date()
+            });
+            shippingRates[gov] = rateVal;
+            showToast(`تم حفظ سعر شحن ${gov} بنجاح: ${rateVal} EGP`);
+          } catch (error) {
+            console.error("Error saving shipping rate:", error);
+            showToast("فشل حفظ سعر الشحن بقاعدة البيانات", "error");
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = `
+              <ion-icon name="save-outline" style="vertical-align: middle; margin-left: 5px;"></ion-icon>
+              <span>حفظ</span>
+            `;
+          }
+        });
+      });
     }
 
     // 3. Stats Calculator

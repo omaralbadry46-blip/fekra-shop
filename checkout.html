@@ -128,7 +128,7 @@
             </div>
             <div class="calc-row">
               <span>تكلفة الشحن والتوصيل:</span>
-              <span style="color: #2ecc71; font-weight:600;">مجاناً لفترة محدودة</span>
+              <span class="price" id="sum-shipping">0.00 EGP</span>
             </div>
             <div class="calc-row total-row">
               <span>الإجمالي الكلي:</span>
@@ -186,16 +186,26 @@
   <script type="module">
     import { getCart, clearCart, getCartTotal, getCartCount, showToast } from './js/cart-helper.js';
     import { db } from './js/firebase-config.js';
-    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    let shippingRates = {};
+    let selectedShippingFee = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
       renderCheckoutSummary();
       updateBadgeOnly();
 
+      const citySelect = document.getElementById('city');
+      if (citySelect) {
+        citySelect.addEventListener('change', updateCheckoutTotals);
+      }
+
       const form = document.getElementById('shipping-form');
       if (form) {
         form.addEventListener('submit', handleOrderSubmit);
       }
+
+      loadShippingRates();
     });
 
     function updateBadgeOnly() {
@@ -250,7 +260,42 @@
 
       const totalVal = getCartTotal();
       if (subtotalEl) subtotalEl.textContent = totalVal.toFixed(2);
-      if (totalEl) totalEl.textContent = totalVal.toFixed(2);
+      updateCheckoutTotals();
+    }
+
+    async function loadShippingRates() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "shipping_rates"));
+        shippingRates = {};
+        querySnapshot.forEach((doc) => {
+          shippingRates[doc.id] = doc.data().rate;
+        });
+      } catch (error) {
+        console.error("Error loading shipping rates:", error);
+      }
+      updateCheckoutTotals();
+    }
+
+    function updateCheckoutTotals() {
+      const citySelect = document.getElementById('city');
+      const shippingEl = document.getElementById('sum-shipping');
+      const totalEl = document.getElementById('sum-total');
+      
+      const subtotalVal = getCartTotal();
+
+      if (!citySelect || citySelect.value === "") {
+        if (shippingEl) shippingEl.textContent = "0.00 EGP";
+        if (totalEl) totalEl.textContent = subtotalVal.toFixed(2);
+        selectedShippingFee = 0;
+        return;
+      }
+
+      const selectedCity = citySelect.value;
+      const rate = shippingRates[selectedCity] !== undefined ? shippingRates[selectedCity] : 100;
+      selectedShippingFee = rate;
+
+      if (shippingEl) shippingEl.textContent = rate.toFixed(2) + " EGP";
+      if (totalEl) totalEl.textContent = (subtotalVal + rate).toFixed(2);
     }
 
     async function handleOrderSubmit(e) {
@@ -287,7 +332,8 @@
           price: item.price,
           quantity: item.quantity
         })),
-        total: getCartTotal(),
+        total: getCartTotal() + selectedShippingFee,
+        shippingFee: selectedShippingFee,
         status: 'pending',
         createdAt: new Date()
       };
